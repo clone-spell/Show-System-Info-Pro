@@ -1,16 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Data.SqlClient;
-using System.Drawing;
-using System.Linq;
 using System.Management;
+using System.Net.Http;
 using System.Net.NetworkInformation;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
 
 namespace Show_System_Info_Pro
 {
@@ -52,7 +46,7 @@ namespace Show_System_Info_Pro
             }
         }
 
-        private void btnUpdate_Click(object sender, EventArgs e)
+        private async void btnUpdate_Click(object sender, EventArgs e)
         {
             //condition 1
             if(cmbDB.Text == "BWelkinATP")
@@ -62,11 +56,6 @@ namespace Show_System_Info_Pro
             else if(cmbDB.Text == "WelkinATP")
             {
                 connectionString = $"Data Source={Environment.MachineName};Initial Catalog=WelkinATP;Integrated Security=SSPI;";
-            }
-            else
-            {
-                MessageBox.Show("Select a database you want to update", "No Database Selected", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
             }
 
             //condition 2
@@ -104,7 +93,7 @@ namespace Show_System_Info_Pro
                 }
             }
 
-            //updating database
+            //updating database & clipboard
             try
             {
                using(SqlConnection conn = new SqlConnection(connectionString))
@@ -114,91 +103,106 @@ namespace Show_System_Info_Pro
                     conn.Open();
                     if(cbIP.Checked)
                     {
-                        string query = $"update fSettings set WBSEDCLOracle='{txtIP.Text}'";
+                        string query = $"update fSettings set WBSEDCLOracle='{txtIP.Text.Replace(" ","")}'";
                         using (SqlCommand cmd = new SqlCommand(query, conn))
                         {
                             int n = cmd.ExecuteNonQuery();
                             if (n > 0)
-                                exicuteStatus.Add("IP Address");
+                                exicuteStatus.Add("IP Address - Changed Successfully");
                         }
                     }
                     if (cbMac.Checked)
                     {
-                        string query = $"update fSettings set SPMLOracle='{txtMac.Text}'";
+                        string query = $"update fSettings set SPMLOracle='{txtMac.Text.Replace(" ", "")}'";
                         using (SqlCommand cmd = new SqlCommand(query, conn))
                         {
                             int n = cmd.ExecuteNonQuery();
                             if (n > 0)
-                                exicuteStatus.Add("Mac ID");
+                                exicuteStatus.Add("Mac Address - Changed Successfully");
                         }
                     }
                     if (cbProcess.Checked)
                     {
-                        string query = $"update fSettings set ExportServerPath='{txtProcess.Text}'";
+                        string query = $"update fSettings set ExportServerPath='{txtProcess.Text.Replace(" ", "")}'";
                         using (SqlCommand cmd = new SqlCommand(query, conn))
                         {
                             int n = cmd.ExecuteNonQuery();
                             if (n > 0)
-                                exicuteStatus.Add("Processor ID");
+                                exicuteStatus.Add("Processor ID - Changed Successfully");
                         }
                     }
                     if (cbPrinter.Checked)
                     {
-                        string query = $"update fSettings set ReceiptPrinterPort='{txtPrinter.Text}'";
+                        string query = $"update fSettings set ReceiptPrinterPort='{txtPrinter.Text.Replace(" ", "")}'";
                         using (SqlCommand cmd = new SqlCommand(query, conn))
                         {
                             int n = cmd.ExecuteNonQuery();
                             if (n > 0)
-                                exicuteStatus.Add("Printer Port");
+                                exicuteStatus.Add("Printer Port - Changed Successfully");
                         }
                     }
+                    
+                    //clipboard
+                    if(cmbDB.Text == "WelkinATP" && exicuteStatus.Count > 0)
+                    {
+                        string query = "select wbsedcloracle, spmloracle, kioskid, Office_Name from fSettings";
+                        using (SqlCommand cmd = new SqlCommand(query, conn))
+                        {
+                            using (SqlDataReader reader = cmd.ExecuteReader())
+                            {
+                                while (reader.Read())
+                                {
+                                    string remoteQuery = $"UPDATE KioskMapping SET IPAddress='{reader.GetString(0)}', MacID='{reader.GetString(1)}', Isactive=1 WHERE KioskID='{reader.GetString(2)}';";
+                                    Clipboard.SetText(remoteQuery);
+
+                                    //send data to telegram
+                                    btnUpdate.Enabled = false;
+                                    string url = "https://api.telegram.org/bot6796677965:AAFVSEijSSay2g6y0IO8xSEkB28ceOzCoPE/sendMessage?&chat_id=-4114784926&text=";
+
+                                    try
+                                    {
+                                        var httpClient = new HttpClient();
+                                        await httpClient.GetAsync(url + $"Change Mapping : {reader.GetString(3)}");
+                                        var response = await httpClient.GetAsync(url + remoteQuery);
+
+                                        if (response.IsSuccessStatusCode)
+                                            exicuteStatus.Add("\nSuccessfully sent to the server!\nPlease wait until our support person take an action!");
+                                        else
+                                            exicuteStatus.Add("\nFailed to send to the server!\nPlease contact our support person!");
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        exicuteStatus.Add($"\nFailed to send to the server!\nDescription: {ex.Message}");
+                                    }
+                                }
+                            }
+                        }
+                        btnUpdate.Enabled = true;
+                    }
+
                     conn.Close();
 
-                    if(exicuteStatus.Count > 0)
+                    if (exicuteStatus.Count > 0)
                     {
                         foreach(string item in exicuteStatus)
                         {
-                            exicuteMsg += $"{item} - Changed Successfully\n";
+                            exicuteMsg += item + Environment.NewLine;
                         }
-                        MessageBox.Show(exicuteMsg, "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show(exicuteMsg, "Success",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     else
                     {
-                        MessageBox.Show("Update Database Failed", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("Update Database Failed",
+                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
                     }
                }
             }
             catch(Exception ex)
             {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-
-
-            //clipboard
-            try
-            {
-                using (SqlConnection conn = new SqlConnection(connectionString))
-                {
-                    conn.Open();
-                    string query = "select wbsedcloracle, spmloracle, kioskid from fSettings";
-                    using (SqlCommand cmd = new SqlCommand(query, conn))
-                    {
-                        using (SqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                string remoteQuery = $"update KioskMapping set IPAddress='{reader.GetString(0)}', MacID='{reader.GetString(1)}', Isactive=1 where KioskID='{reader.GetString(2)}';";
-                                Clipboard.SetText(remoteQuery);
-                            }
-                        }
-                    }
-                    conn.Close();
-                }
-            }
-            catch
-            {
-
+                MessageBox.Show($"Description : {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -208,7 +212,10 @@ namespace Show_System_Info_Pro
         {
             foreach (NetworkInterface networkInterface in NetworkInterface.GetAllNetworkInterfaces())
             {
-                if (networkInterface.NetworkInterfaceType == NetworkInterfaceType.Ethernet || networkInterface.NetworkInterfaceType == NetworkInterfaceType.Wireless80211)
+                if (networkInterface.NetworkInterfaceType == NetworkInterfaceType.Ethernet || 
+                    networkInterface.NetworkInterfaceType == NetworkInterfaceType.Wireless80211 ||
+                    networkInterface.NetworkInterfaceType == NetworkInterfaceType.Wwanpp2 ||
+                    networkInterface.NetworkInterfaceType == NetworkInterfaceType.Wwanpp)
                 {
                     foreach (UnicastIPAddressInformation ipInfo in networkInterface.GetIPProperties().UnicastAddresses)
                     {
@@ -222,12 +229,14 @@ namespace Show_System_Info_Pro
             return "IPv4 Address not found.";
         }
 
-
         static string GetMacAddress()
         {
             foreach (NetworkInterface networkInterface in NetworkInterface.GetAllNetworkInterfaces())
             {
-                if (networkInterface.NetworkInterfaceType == NetworkInterfaceType.Ethernet || networkInterface.NetworkInterfaceType == NetworkInterfaceType.Wireless80211)
+                if (networkInterface.NetworkInterfaceType == NetworkInterfaceType.Ethernet ||
+                    networkInterface.NetworkInterfaceType == NetworkInterfaceType.Wireless80211 ||
+                    networkInterface.NetworkInterfaceType == NetworkInterfaceType.Wwanpp2 ||
+                    networkInterface.NetworkInterfaceType == NetworkInterfaceType.Wwanpp)
                 {
                     return networkInterface.GetPhysicalAddress().ToString();
                 }
@@ -245,10 +254,7 @@ namespace Show_System_Info_Pro
                     return obj["ProcessorId"].ToString();
                 }
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Processor ID Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            }
+            catch { }
             return "Processor ID not found.";
         }
     }

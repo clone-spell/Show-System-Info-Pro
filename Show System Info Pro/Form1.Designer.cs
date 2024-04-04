@@ -48,25 +48,25 @@
             // txtIP
             // 
             this.txtIP.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txtIP.Location = new System.Drawing.Point(149, 75);
+            this.txtIP.Location = new System.Drawing.Point(152, 75);
             this.txtIP.Name = "txtIP";
-            this.txtIP.Size = new System.Drawing.Size(211, 22);
+            this.txtIP.Size = new System.Drawing.Size(208, 22);
             this.txtIP.TabIndex = 1;
             // 
             // txtMac
             // 
             this.txtMac.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txtMac.Location = new System.Drawing.Point(149, 119);
+            this.txtMac.Location = new System.Drawing.Point(152, 119);
             this.txtMac.Name = "txtMac";
-            this.txtMac.Size = new System.Drawing.Size(211, 22);
+            this.txtMac.Size = new System.Drawing.Size(208, 22);
             this.txtMac.TabIndex = 2;
             // 
             // txtProcess
             // 
             this.txtProcess.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txtProcess.Location = new System.Drawing.Point(149, 163);
+            this.txtProcess.Location = new System.Drawing.Point(152, 163);
             this.txtProcess.Name = "txtProcess";
-            this.txtProcess.Size = new System.Drawing.Size(211, 22);
+            this.txtProcess.Size = new System.Drawing.Size(208, 22);
             this.txtProcess.TabIndex = 3;
             // 
             // cmbDB
@@ -76,9 +76,9 @@
             this.cmbDB.Items.AddRange(new object[] {
             "BWelkinATP",
             "WelkinATP"});
-            this.cmbDB.Location = new System.Drawing.Point(149, 29);
+            this.cmbDB.Location = new System.Drawing.Point(152, 29);
             this.cmbDB.Name = "cmbDB";
-            this.cmbDB.Size = new System.Drawing.Size(211, 24);
+            this.cmbDB.Size = new System.Drawing.Size(208, 24);
             this.cmbDB.TabIndex = 2;
             this.cmbDB.TabStop = false;
             // 
@@ -110,10 +110,10 @@
             this.cbMac.AutoSize = true;
             this.cbMac.Location = new System.Drawing.Point(33, 121);
             this.cbMac.Name = "cbMac";
-            this.cbMac.Size = new System.Drawing.Size(77, 20);
+            this.cbMac.Size = new System.Drawing.Size(115, 20);
             this.cbMac.TabIndex = 3;
             this.cbMac.TabStop = false;
-            this.cbMac.Text = "MAC ID :";
+            this.cbMac.Text = "MAC Address :";
             this.cbMac.UseVisualStyleBackColor = true;
             // 
             // cbProcess
@@ -130,9 +130,9 @@
             // txtPrinter
             // 
             this.txtPrinter.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txtPrinter.Location = new System.Drawing.Point(149, 207);
+            this.txtPrinter.Location = new System.Drawing.Point(152, 207);
             this.txtPrinter.Name = "txtPrinter";
-            this.txtPrinter.Size = new System.Drawing.Size(211, 22);
+            this.txtPrinter.Size = new System.Drawing.Size(208, 22);
             this.txtPrinter.TabIndex = 4;
             // 
             // cbPrinter
