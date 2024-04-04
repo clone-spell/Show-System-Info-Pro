@@ -143,8 +143,9 @@ namespace Show_System_Info_Pro
                     }
                     
                     //clipboard
-                    if(cmbDB.Text == "WelkinATP" && exicuteStatus.Count > 0)
+                    if(cmbDB.Text == "WelkinATP" && (cbIP.Checked || cbMac.Checked))
                     {
+                        progressBar1.Visible = true;
                         string query = "select wbsedcloracle, spmloracle, kioskid, Office_Name from fSettings";
                         using (SqlCommand cmd = new SqlCommand(query, conn))
                         {
@@ -178,6 +179,7 @@ namespace Show_System_Info_Pro
                             }
                         }
                         btnUpdate.Enabled = true;
+                        progressBar1.Visible = false;
                     }
 
                     conn.Close();

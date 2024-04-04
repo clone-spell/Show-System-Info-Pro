@@ -43,6 +43,7 @@
             this.btnUpdate = new System.Windows.Forms.Button();
             this.panelCL2 = new System.Windows.Forms.Panel();
             this.panelCL1 = new System.Windows.Forms.Panel();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.SuspendLayout();
             // 
             // txtIP
@@ -186,6 +187,19 @@
             this.panelCL1.TabIndex = 5;
             this.panelCL1.Click += new System.EventHandler(this.panelCL1_Click);
             // 
+            // progressBar1
+            // 
+            this.progressBar1.Enabled = false;
+            this.progressBar1.Location = new System.Drawing.Point(0, 0);
+            this.progressBar1.Margin = new System.Windows.Forms.Padding(0);
+            this.progressBar1.MarqueeAnimationSpeed = 25;
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(392, 5);
+            this.progressBar1.Step = 25;
+            this.progressBar1.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
+            this.progressBar1.TabIndex = 6;
+            this.progressBar1.Visible = false;
+            // 
             // Form1
             // 
             this.AcceptButton = this.btnShow;
@@ -193,6 +207,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.GradientInactiveCaption;
             this.ClientSize = new System.Drawing.Size(393, 316);
+            this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.panelCL1);
             this.Controls.Add(this.panelCL2);
             this.Controls.Add(this.btnUpdate);
@@ -238,6 +253,7 @@
         private System.Windows.Forms.Button btnUpdate;
         private System.Windows.Forms.Panel panelCL2;
         private System.Windows.Forms.Panel panelCL1;
+        private System.Windows.Forms.ProgressBar progressBar1;
     }
 }
 
